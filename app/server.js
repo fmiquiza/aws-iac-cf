@@ -44,10 +44,9 @@ const server = http.createServer((req, res) => {
     </head>
     <body>
         <div class="card">
-            <h1>🚀 AWS Student Day Demo</h1>
-            <!-- CAMBIA ESTA LÍNEA EN VIVO DURANTE LA PRESENTACIÓN -->
-            <h2>Versión 1.0 — EC2 + Script User Data</h2>
-            <p>¡La infraestructura y el código de la app se instalaron sin intervención manual.</p>
+            <h1>🚀 AWS Student Day 2026 - Demo</h1>
+            <h2>Versión 1.1 — EC2</h2>
+            <p>¡La infraestructura y el código de la app levantadas sin procesos manuales.</p>
             <div class="badge">Estado del Pipeline: En Vivo y Desplegado</div>
         </div>
     </body>
