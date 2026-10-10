@@ -36,7 +36,7 @@ Resources:
     Type: AWS::EC2::Instance
     Properties:
       InstanceType: t2.micro
-      ImageId: !Ref ami-0d27e0fb3bac4d724
+      ImageId: ami-0d27e0fb3bac4d724
       KeyName: !Ref KeyName  # <-- ATTACHES THE KEY PAIR TO THE INSTANCE
       SecurityGroups:
         - !Ref WebServerSecurityGroup
