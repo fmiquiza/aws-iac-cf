@@ -1,0 +1,98 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: >
+  AWS Student Day 2026 - Demo Infrastructure.
+  Creates an EC2 instance with SSH access, SSM AMI lookup, and Node.js via Systemd.
+
+Parameters:
+  GitHubRepoUrl:
+    Type: String
+    Description: Public GitHub repository URL containing the app code.
+
+  KeyName:
+    Type: AWS::EC2::KeyPair::KeyName
+    Description: Name of an existing EC2 Key Pair to enable SSH access.
+    Default: Fher-kp
+
+  LatestAmiId:
+    Type: 'AWS::SSM::Parameter::Value<AWS::EC2::Image::Id>'
+    Default: '/aws/service/ami-amazon-linux-latest/al2023-ami-kernel-default-x86_64'
+
+Resources:
+  WebServerSecurityGroup:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupDescription: Allow public HTTP traffic on port 80 and SSH on port 22
+      SecurityGroupIngress:
+        - IpProtocol: tcp
+          FromPort: 80
+          ToPort: 80
+          CidrIp: 0.0.0.0/0
+        - IpProtocol: tcp
+          FromPort: 22
+          ToPort: 22
+          CidrIp: 0.0.0.0/0  # For production, restrict this to your specific IP address
+
+  WebServerInstance:
+    Type: AWS::EC2::Instance
+    Properties:
+      InstanceType: t2.micro
+      ImageId: !Ref LatestAmiId
+      KeyName: !Ref KeyName  # <-- ATTACHES THE KEY PAIR TO THE INSTANCE
+      SecurityGroups:
+        - !Ref WebServerSecurityGroup
+      UserData:
+        Fn::Base64: !Sub |
+          #!/bin/bash
+          # 1. Update and install Node.js & Git
+          dnf update -y
+          dnf install -y nodejs git
+
+          # 2. Setup project directory
+          mkdir -p /var/www/app
+          cd /var/www/app
+
+          # 3. Clone repository
+          git clone ${GitHubRepoUrl} repo_code
+
+          # 4. Copy application files cleanly
+          if [ -d "repo_code/app" ]; then
+            cp -r repo_code/app/* .
+          else
+            cp -r repo_code/* .
+          fi
+
+          # 5. Install dependencies
+          npm install
+
+          # 6. Create a Systemd service to keep the server running reliably
+          cat <<EOT > /etc/systemd/system/nodeapp.service
+          [Unit]
+          Description=Node.js Web App
+          After=network.target
+
+          [Service]
+          Type=simple
+          User=root
+          WorkingDirectory=/var/www/app
+          ExecStart=/usr/bin/node server.js
+          Restart=always
+
+          [Install]
+          WantedBy=multi-user.target
+          EOT
+
+          # 7. Enable and start the web server
+          systemctl daemon-reload
+          systemctl enable nodeapp
+          systemctl start nodeapp
+      Tags:
+        - Key: Name
+          Value: StudentDay-EC2-WebServer
+
+Outputs:
+  WebURL:
+    Description: Public URL for the deployed web application
+    Value: !Sub 'http://${WebServerInstance.PublicDnsName}'
+  SSHCommand:
+    Description: Command to connect to the instance via SSH
+    Value: !Sub 'ssh -i "${KeyName}.pem" ec2-user@${WebServerInstance.PublicDnsName}'

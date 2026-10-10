@@ -1,0 +1,10 @@
+{
+  "name": "aws-student-day-app",
+  "version": "1.0.0",
+  "description": "Node.js app - basic IaC deployment through user-data",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "dependencies": {}
+}

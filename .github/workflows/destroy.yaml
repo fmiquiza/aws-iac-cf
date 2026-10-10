@@ -1,0 +1,22 @@
+name: Destroy EC2 Stack
+
+on:
+  workflow_dispatch:  # Allows manual execution from the GitHub Actions UI
+
+jobs:
+  destroy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Authenticate to AWS
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: us-east-1
+
+      - name: Delete CloudFormation Stack
+        run: |
+          aws cloudformation delete-stack --stack-name aws-iac-demo-CF
+          echo "Waiting for stack deletion to finish..."
+          aws cloudformation wait stack-delete-complete --stack-name aws-iac-demo-CF
+          echo "Stack aws-iac-demo-CF successfully destroyed!"
