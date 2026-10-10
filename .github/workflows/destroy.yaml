@@ -16,7 +16,7 @@ jobs:
 
       - name: Delete CloudFormation Stack
         run: |
-          aws cloudformation delete-stack --stack-name aws-iac-demo-CF
+          aws cloudformation delete-stack --stack-name StudentDayEC2Stack
           echo "Waiting for stack deletion to finish..."
-          aws cloudformation wait stack-delete-complete --stack-name aws-iac-demo-CF
-          echo "Stack aws-iac-demo-CF successfully destroyed!"
+          aws cloudformation wait stack-delete-complete --stack-name StudentDayEC2Stack
+          echo "Stack StudentDayEC2Stack successfully destroyed!"
