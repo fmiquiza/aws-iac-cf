@@ -47,7 +47,7 @@ const server = http.createServer((req, res) => {
             <h1>🚀 AWS Student Day Demo</h1>
             <!-- CAMBIA ESTA LÍNEA EN VIVO DURANTE LA PRESENTACIÓN -->
             <h2>Versión 1.0 — EC2 + Script User Data</h2>
-            <p>¡La infraestructura y el código de la app se instalaron automáticamente sin ingresar por SSH!</p>
+            <p>¡La infraestructura y el código de la app se instalaron automáticamente.</p>
             <div class="badge">Estado del Pipeline: En Vivo y Desplegado</div>
         </div>
     </body>
